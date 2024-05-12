@@ -64,7 +64,7 @@ def openButton():
     frame4 = customtkinter.CTkFrame(frame3, width=250, height=980, bg_color='#262626', fg_color='#262626')
     frame4.place(x=0, y=0)
     customtkinter.CTkLabel(frame4,text='Menu',font=('Arial', 34, 'italic','bold'),text_color='#748498').place(relx=0.5,y=39,anchor=CENTER)
-    Frame(frame4,width=380,height=7,bg='#001220').place(x=0,y=124)
+    Frame(frame4,width=380,height=10,bg='#001220').place(x=0,y=124)
     customtkinter.CTkButton(frame4,text='Home',font= ('Arial', 27, 'bold'),
                             fg_color='#262626',width=250,
                             bg_color='#262626',hover_color='#1a1919',
@@ -106,13 +106,26 @@ def MyAccount():
     pil2_image = im.open('images\closee.png')
     image11 = customtkinter.CTkImage(pil_image)
     image10 = customtkinter.CTkImage(pil2_image)
+    pil18 = im.open('images\poulet.png')
+    image18 = customtkinter.CTkImage(pil18)
     customtkinter.CTkButton(frame3, command=openButton, text='',
                             image=image11, hover_color='#262626',
                             width=20, bg_color='#262626',
                             fg_color='#262626').place(x=0, y=0)
     customtkinter.CTkLabel(frame3,text='MyfitnessTracker',font=font2).place(relx=0.5,y=20,anchor=CENTER)
-    customtkinter.CTkFrame(frame3, width=170, height=980, bg_color='#262626', fg_color='#262626',).place(x=810,y=0)
-
+    frame5 = customtkinter.CTkFrame(frame3, width=170, height=980, bg_color='#262626', fg_color='#262626')
+    frame5.place(x=810,y=0)
+    customtkinter.CTkLabel(frame5,text='Health-state',text_color='#748498',font=('Comic Sans MS',25,'bold'),
+                           bg_color='#262626',fg_color='#262626').place(relx=0.5,y=39,anchor=CENTER)
+    Frame(frame5,width=280,height=10,bg='#001220').place(x=0,y=124)
+    customtkinter.CTkLabel(frame5,text='Meal',text_color='#ff950a',font=('Comfortaa',24,'bold'),
+                           bg_color='#262626',fg_color='#262626').place(relx=0.6,y=120,anchor=CENTER)
+    customtkinter.CTkLabel(frame5,image=image18,text='',bg_color='#262626',fg_color='#262626',
+                           font=('Comfortaa',24,'bold')).place(relx=0.3,y=120,anchor=CENTER)
+    customtkinter.CTkLabel(frame5, text=0, text_color='#fff', font=('Comfortaa', 24, 'bold'),
+                           bg_color='#262626', fg_color='#262626').place(relx=0.5, y=155, anchor=CENTER)
+    customtkinter.CTkLabel(frame5, text='Excercice', text_color='#ff950a', font=('Comfortaa', 24, 'bold'),
+                           bg_color='#262626', fg_color='#262626').place(relx=0.6, y=200, anchor=CENTER)
 def check():
     global cursor, conn
     if '' in [var_age.get(), var_weight.get(), var_weightG.get(), var_height.get(),
