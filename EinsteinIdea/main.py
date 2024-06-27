@@ -1,3 +1,5 @@
+import tkinter
+import workoutf
 import mysql.connector
 import customtkinter
 import bcrypt
@@ -6,7 +8,8 @@ from tkinter import messagebox
 from PIL import ImageTk,Image as im
 import calcul
 import die
-
+excercice = 0
+meal = 0
 app = customtkinter.CTk()
 app.title('My Tracker app')
 app.geometry('980x560')
@@ -16,6 +19,7 @@ font1 = ('Helvetica', 40, 'bold')
 font2 = ('Arial', 27, 'bold')
 font3 = ('Arial', 19, 'bold')
 font4 = ('Arial', 19, 'bold', 'underline')
+imm = PhotoImage(file="images\workout.png")
 conn = mysql.connector.connect(
 	user='root',
 	host='localhost',
@@ -45,6 +49,44 @@ cursor.execute('''
     constraint user foreign key(username) references users(username))
 ''')
 cursor = conn.cursor(buffered=True)
+def exercice():
+    global exname
+    frame01 = customtkinter.CTkFrame(app,
+                                     width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                     )
+    frame01.place(x=0, y=0)
+    customtkinter.CTkLabel(frame01, text='Choose Exercice', font=font2).place(relx=0.5, y=82, anchor=CENTER)
+    liste = workoutf.listname(musclname.get())
+    exname = StringVar()
+    customtkinter.CTkComboBox(frame01, values=liste, bg_color='#1a1a1a', width=200, height=40, variable=exname,
+                              font=font3).place(relx=0.5, y=200, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Select Exercice', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10).place(relx=0.5, y=300, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='<< Back', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10, command=workout).place(relx=0.5, y=380, anchor=CENTER)
+def workout():
+    global musclname
+    frame01 = customtkinter.CTkFrame(app,
+                                    width=980, height=560,bg_color='#1a1a1a',fg_color='#1a1a1a'
+                                    )
+    frame01.place(x=0,y=0)
+    customtkinter.CTkLabel(frame01,text='Choose Muscle',font=font2).place(relx=0.5,y=82,anchor=CENTER)
+    liste = ['abdominals','abductors','adductors','biceps','calves','chest','forearms','glutes',
+        'hamstrings','lats','lower_back','middle_back','neck','quadriceps','traps','triceps']
+    musclname = StringVar()
+    name = customtkinter.CTkComboBox(frame01,values=liste,bg_color='#1a1a1a',width=200,height=40,variable=musclname,
+                              font=font3)
+    name.place(relx=0.5,y=200,anchor=CENTER)
+    name.set(liste[0])
+    customtkinter.CTkButton(frame01, text='Select Muscle',width=160,height=40,font=font3,cursor='hand2',
+                                            corner_radius=10,command=exercice).place(relx=0.5, y=300, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10,command=back).place(relx=0.5, y=380, anchor=CENTER)
+    '''customtkinter.CTkLabel(frame01, text_color="#ffffff", text_color_disabled="#c8d0de",
+                           text="Workout", font=("SF Display", 17, "bold")).place(relx=0.5, y=20, anchor=CENTER)'''
+
 def editing():
     forme()
 def logout():
@@ -59,7 +101,7 @@ def openButton():
     image17 = customtkinter.CTkImage(pil3)
     pil4 = im.open('images\\utensils-solid.png')
     image18 = customtkinter.CTkImage(pil4)
-    pil5 = im.open('images\workout.png')
+    pil5 = im.open('images\woorkout.png')
     image19 = customtkinter.CTkImage(pil5)
     pil6 = im.open('images\calendar-days-solid.png')
     image20 = customtkinter.CTkImage(pil6)
@@ -82,7 +124,8 @@ def openButton():
     customtkinter.CTkButton(frame4, text='WorkOut', font=('Arial', 27, 'bold'),
                             fg_color='#262626', width=250,
                             bg_color='#262626', hover_color='#1a1919',
-                            text_color='#195e94', corner_radius=0,image=image19).place(relx=0.5, y=275, anchor=CENTER)
+                            text_color='#195e94', corner_radius=0,image=image19,
+                            command=workout).place(relx=0.5, y=275, anchor=CENTER)
     customtkinter.CTkButton(frame4, text='Program', font=('Arial', 27, 'bold'),
                             fg_color='#262626', width=250,
                             bg_color='#262626', hover_color='#1a1919',
@@ -103,7 +146,8 @@ def openButton():
                             image=image10,width=20).place(x=220,y=0)
 #connected
 def MyAccount():
-    global frame3,image11,image10,frame5
+    global frame3,image11,image10,frame5,tdeee,excercice,meal
+    tdeee = calcul.apiTDEE(age,gender,height,weight,activity)
     frame2.destroy()
     frame3 = customtkinter.CTkFrame(app,bg_color='#001220',fg_color='#001220',
                                 width=980,height=560)
@@ -133,13 +177,13 @@ def MyAccount():
                            bg_color='#262626',fg_color='#262626').place(relx=0.6,y=120,anchor=CENTER)
     customtkinter.CTkLabel(frame5,image=image18,text='',bg_color='#262626',fg_color='#262626',
                            font=('Comfortaa',24,'bold')).place(relx=0.3,y=120,anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=0, text_color='#327039', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text=f'{meal}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=155, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=' Excercice', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=200, anchor=CENTER)
     customtkinter.CTkLabel(frame5, image=image19, text='', bg_color='#262626', fg_color='#262626',
                            font=('Comfortaa', 24, 'bold')).place(relx=0.2, y=200, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=0, text_color='#327039', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text=f'{excercice}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=240, anchor=CENTER)
     #---------------------------------BMI----------------------------------------------------------------------------
     customtkinter.CTkLabel(frame5, text='BMI', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
@@ -179,7 +223,7 @@ def check():
                            [username,var_x.get(),var_name.get(),var_age.get(),var_height.get(),ww,activ_var.get(),fats,carbs,protein,calorie,wwG])
         conn.commit()
     elif protein == '' and carbs == '' and fats == '' and calorie == '':
-        macros = die.set_macros(ww, wwG)
+        macros = die.set_macros(ww, wwG,calcul.apiTDEE(var_age.get(),var_x.get(),var_height.get(),var_weight.get(),activ_var.get()))
         cursor.execute('insert into usersdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                        [username, var_x.get(), var_name.get(), var_age.get(),var_height.get(),ww, activ_var.get(),
                         macros[3], macros[2], macros[1], macros[0], wwG])
@@ -446,14 +490,14 @@ def forme():
                                     fg_color="#2e435c",
                                     border_width=2,
                                     bg_color="#11202b",
-                                    width=420, height=510,
+                                    width=420, height=510
                                     )
     #Label(frame3, image=img1).pack()
     frame2.place(relx=0.5, rely=0.5, anchor=CENTER)
     cursor.execute("select username from usersdata where username = %s", (username,))
     result = cursor.fetchone()
     if result is not None:
-        Label(frame3, image=img1).pack()
+        Label(frame3, image=img1 ,background='black').pack()
         cursor.execute("select * from usersdata where username= %s",(username,))
         respnse = cursor.fetchone()
         ogender = respnse[1]
@@ -463,6 +507,7 @@ def forme():
         oweight = respnse[5]
         oactivity = respnse[6]
         ofatGoel = respnse[7]
+        ocarbsGoel = respnse[8]
         oproteinGol = respnse[9]
         ocaloriGoal = respnse[10]
         oweightG = respnse[11]
@@ -534,7 +579,7 @@ def forme():
         var_fat.place(x=24, y=311)
         customtkinter.CTkLabel(frame2, text_color="yellow", text="Carbs goal :", font=('Arial', 16, 'bold')).place(
             x=140, y=276)
-        var_carb = customtkinter.CTkEntry(frame2, text_color="#ffffff", placeholder_text=f"{ofatGoel}", width=80,
+        var_carb = customtkinter.CTkEntry(frame2, text_color="#ffffff", placeholder_text=f"{ocarbsGoel}", width=80,
                                           font=('Arial', 14, 'normal'), border_width=3, bg_color='#2e435c',
                                           fg_color='#2e435c',
                                           corner_radius=13,
@@ -574,14 +619,13 @@ def forme():
         submit_label.place(relx=0.7, y=480, anchor=CENTER)
     else:
         frame2.destroy()
-        Label(app, image=img1).pack()
+        Label(app, image=img1,background='black').place(x=0,y=0)
         frame2 = customtkinter.CTkFrame(app, corner_radius=15,
                                         fg_color="#2e435c",
                                         border_width=2,
                                         bg_color="#11202b",
-                                        width=420, height=510,
-                                        )
-        
+                                        width=420, height=510)
+
         frame2.place(relx=0.5, rely=0.5, anchor=CENTER)
         customtkinter.CTkLabel(frame2, text_color="#ffffff", text_color_disabled="#c8d0de",
                                text="Hi , Welcome to Fit Tracker App", font=("SF Display", 17, "bold")).place(relx=0.5,
