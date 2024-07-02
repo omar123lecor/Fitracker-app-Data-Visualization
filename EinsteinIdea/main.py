@@ -1,5 +1,6 @@
 import tkinter
 import workoutf
+import checc
 import mysql.connector
 import customtkinter
 import bcrypt
@@ -8,6 +9,8 @@ from tkinter import messagebox
 from PIL import ImageTk,Image as im
 import calcul
 import die
+import time
+import os
 excercice = 0
 meal = 0
 app = customtkinter.CTk()
@@ -48,24 +51,196 @@ cursor.execute('''
     weightGoel int,
     constraint user foreign key(username) references users(username))
 ''')
+cursor.execute('''
+    create table if not exists workstable(
+    username varchar(100),
+    exname varchar(100),
+    Times varchar(100),
+    typee varchar(40),
+    muscle varchar(70),
+    equipment varchar(100),
+    difficulty varchar(70),
+    instruction varchar(1500),
+    constraint pk_name foreign key(username) references users(username))
+''')
+
 cursor = conn.cursor(buffered=True)
+def InstraFrame():
+    wordsL = NomInstra.split()
+    s = 0
+    line = ''
+    for i in range(len(wordsL)):
+        s += 1
+        if s == 10:
+            s = 0
+            wordsL.insert(i,'\n')
+    for j in wordsL:
+        line += j + ' '
+    pil_imagee = os.path.join(os.path.dirname(__file__),'images\workout.png')
+    imageepath = im.open(pil_imagee)
+    imagee = customtkinter.CTkImage(light_image=imageepath,size=(980,560))
+    customtkinter.CTkLabel(app,image=imagee,text='').place(x=0,y=0)
+    frame02 = customtkinter.CTkFrame(app, corner_radius=15,
+                                     bg_color='#1a1a1a', fg_color='#1a1a1a',
+                                    border_width=2,
+                                    width=520, height=510
+                                    )
+    frame02.place(relx=0.5, rely=0.5, anchor=CENTER)
+    customtkinter.CTkLabel(frame02,text='Instructions',bg_color='#1a1a1a',font=('Impact',27)).pack(expand=True,fill='x')
+    lab = customtkinter.CTkLabel(frame02, text=f'{line}', bg_color='#1a1a1a', font=('Arial', 17))
+    lab.pack(expand=True,fill='both')
+    customtkinter.CTkButton(app, text='<<Back', width=150, height=30, font=font3, cursor='hand2',
+                            corner_radius=10, command=worktask).place(relx=0.5, rely=0.95, anchor=CENTER)
+
+    '''frame01 = customtkinter.CTkFrame(top, corner_radius=15,
+                                    fg_color="#2e435c",
+                                    border_width=2,
+                                    bg_color="#11202b",
+                                    width=420, height=510)
+    frame01.place(relx=0.5, rely=0.5, anchor=CENTER)
+    #customtkinter.CTkLabel(frame01,image=imagee2).pack()'''
+def worktask():
+    global excercice,NomInstra
+    frame01 = customtkinter.CTkFrame(app,
+                                     width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                     )
+    frame01.place(x=0, y=0)
+    try:
+        date = dataname.get()
+        if date not in listofdate:
+            raise checc.customerror
+        day = date.split()
+        choice = day[0]+' '+day[1]+' '+day[2]
+        year = day[4]
+        cursor.execute(f"select count(times) from workstable where username=%s and times like '%{choice}%' "
+                       f"and times like '%{year}%'",[username])
+        response = cursor.fetchall()
+        excercice = response[0][0]
+        cursor.execute("select * from workstable where username = %s and times = %s",[username,date])
+        response = cursor.fetchone()
+        NomEx = response[1]
+        TypeEx = response[3]
+        NomMuscle = response[4]
+        NomEqui = response[5]
+        NomDiff = response[6]
+        NomInstra = response[7]
+        customtkinter.CTkLabel(frame01,text='Muscle name :',font=('Impact', 20, 'bold'),text_color='yellow').place(relx = 0.3,y = 80)
+        customtkinter.CTkLabel(frame01,text=f'{NomMuscle}',font=('Arial', 20, 'bold'),text_color='#7adb25').place(x=450,y=80)
+        customtkinter.CTkLabel(frame01, text='Excercice name :', font=('Impact', 20, 'bold'), text_color='yellow').place(
+            relx=0.3, y=140)
+        customtkinter.CTkLabel(frame01, text=f"{NomEx}", font=('Arial', 20, 'bold'), text_color='#7adb25').place(
+            x=470, y=140)
+        customtkinter.CTkLabel(frame01, text='Equipement name :', font=('Impact', 20, 'bold'),text_color='yellow').place(relx=0.3, y=200)
+        customtkinter.CTkLabel(frame01, text=f'{NomEqui}', font=('Arial', 20, 'bold'),text_color='#7adb25').place(x=490, y=200)
+        customtkinter.CTkLabel(frame01, text='Excercice Type :', font=('Impact', 20, 'bold'),
+                               text_color='yellow').place(relx=0.3, y=260)
+        customtkinter.CTkLabel(frame01, text=f'{TypeEx}', font=('Arial', 20, 'bold'), text_color='#7adb25').place(x=460,
+                                                                                                                  y=260)
+        customtkinter.CTkLabel(frame01, text='Excercice Difficulty :', font=('Impact', 20, 'bold'),
+                               text_color='yellow').place(relx=0.3, y=320)
+        customtkinter.CTkLabel(frame01, text=f'{NomDiff}', font=('Arial', 20, 'bold'), text_color='#7adb25').place(x=498,
+                                                                                                                 y=320)
+        customtkinter.CTkButton(frame01, text='Main page', width=190, height=50, font=font3, cursor='hand2',
+                                corner_radius=10, command=back).place(relx=0.2, rely=0.87, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='See Instruction', width=190, height=50, font=font3, cursor='hand2',
+                                corner_radius=10, command=InstraFrame).place(relx=0.5, rely=0.87, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<<Back', width=190, height=50, font=font3, cursor='hand2',
+                                corner_radius=10, command=programw).place(relx=0.8, rely=0.87, anchor=CENTER)
+    except checc.customerror:
+        messagebox.showerror('erreur','date doesn''t exist')
+    except Exception as e:
+        messagebox.showerror('erreur',e)
+
+
+
+def programme():
+    frame01 = customtkinter.CTkFrame(app,
+                                     width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                     )
+    frame01.place(x=0, y=0)
+    customtkinter.CTkButton(frame01, text='Food', width=190, height=50, font=font3, cursor='hand2',
+                            corner_radius=10).place(relx=0.5, rely=0.37, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Workout', width=190, height=50, font=font3, cursor='hand2',
+                            corner_radius=10, command=programw).place(relx=0.5, rely=0.52, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Main page', width=190, height=50, font=font3, cursor='hand2',
+                            corner_radius=10, command=back).place(relx=0.5, rely=0.67, anchor=CENTER)
+def programw():
+    global dataname,listofdate
+    try:
+        listofdate = []
+        frame01 = customtkinter.CTkFrame(app,
+                                         width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                         )
+        frame01.place(x=0, y=0)
+        customtkinter.CTkLabel(frame01, text='Choose Date', font=font2).place(relx=0.5, y=82, anchor=CENTER)
+        cursor.execute("select times from workstable where username = %s",[username])
+        response = cursor.fetchall()
+        for date in response:
+            listofdate.append(date[0])
+        if len(listofdate) == 0:
+            raise checc.customerror
+        dataname = StringVar()
+        name = customtkinter.CTkComboBox(frame01, values=listofdate, bg_color='#1a1a1a', width=200, height=40,
+                                         variable=dataname,
+                                         font=font3)
+        name.place(relx=0.5, y=200, anchor=CENTER)
+        name.set(listofdate[0])
+        customtkinter.CTkButton(frame01, text='Select Date', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,command=worktask).place(relx=0.5, y=300, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<<Back', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=programme).place(relx=0.5, y=460, anchor=CENTER)
+    except checc.customerror:
+        messagebox.showerror('error','No date found')
+        programme()
+
+def workdata():
+    try:
+        exnamed = exname.get()
+        muscle = musclname.get()
+        if exnamed not in listee:
+            raise checc.customerror
+        times = time.ctime()
+        typ = workoutf.types(muscle,exnamed)
+        diff = workoutf.difficulty(muscle,exnamed)
+        equi = workoutf.equipement(muscle,exnamed)
+        instra = workoutf.instructions(muscle,exnamed)
+        cursor.execute('insert into workstable values(%s,%s,%s,%s,%s,%s,%s,%s)',[username,exnamed,times,typ,muscle,
+                                                                        equi,diff,instra])
+        conn.commit()
+        back()
+    except checc.customerror:
+        messagebox.showerror('erreur','Choisir un nom convenable')
+        exercice()
+
+
 def exercice():
-    global exname
+    global exname,listee
     frame01 = customtkinter.CTkFrame(app,
                                      width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
                                      )
     frame01.place(x=0, y=0)
     customtkinter.CTkLabel(frame01, text='Choose Exercice', font=font2).place(relx=0.5, y=82, anchor=CENTER)
-    liste = workoutf.listname(musclname.get())
-    exname = StringVar()
-    customtkinter.CTkComboBox(frame01, values=liste, bg_color='#1a1a1a', width=200, height=40, variable=exname,
-                              font=font3).place(relx=0.5, y=200, anchor=CENTER)
-    customtkinter.CTkButton(frame01, text='Select Exercice', width=160, height=40, font=font3, cursor='hand2',
-                            corner_radius=10).place(relx=0.5, y=300, anchor=CENTER)
-    customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
-                            corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
-    customtkinter.CTkButton(frame01, text='<< Back', width=160, height=40, font=font3, cursor='hand2',
-                            corner_radius=10, command=workout).place(relx=0.5, y=380, anchor=CENTER)
+    try:
+        listee = workoutf.listname(musclname.get())
+
+        if len(listee) == 0:
+            raise checc.customerror
+        exname = StringVar()
+        box = customtkinter.CTkComboBox(frame01, values=listee, bg_color='#1a1a1a', width=200, height=40, variable=exname,
+                                  font=font3)
+        box.place(relx=0.5, y=200, anchor=CENTER)
+        box.set(listee[0])
+        customtkinter.CTkButton(frame01, text='Select Exercice', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,command=workdata).place(relx=0.5, y=300, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<< Back', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=workout).place(relx=0.5, y=380, anchor=CENTER)
+    except Exception:
+        messagebox.showerror('error', 'data not found')
+        workout()
 def workout():
     global musclname
     frame01 = customtkinter.CTkFrame(app,
@@ -129,7 +304,8 @@ def openButton():
     customtkinter.CTkButton(frame4, text='Program', font=('Arial', 27, 'bold'),
                             fg_color='#262626', width=250,
                             bg_color='#262626', hover_color='#1a1919',
-                            text_color='#195e94', corner_radius=0, image=image20).place(relx=0.5, y=340, anchor=CENTER)
+                            text_color='#195e94', corner_radius=0, image=image20,
+                            command=programme).place(relx=0.5, y=340, anchor=CENTER)
     customtkinter.CTkButton(frame4, text='Edit', font=('Arial', 27, 'bold'),
                             fg_color='#262626', width=250,
                             bg_color='#262626', hover_color='#1a1919',command=editing,

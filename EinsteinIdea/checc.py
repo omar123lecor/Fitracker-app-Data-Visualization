@@ -1,3 +1,3 @@
-import workoutf
-bab = workoutf.listname('bicepss')
-print(bab)
+import time
+class customerror(Exception):
+    pass
