@@ -73,9 +73,86 @@ cursor.execute('''
     ingredients varchar(800),
     servings varchar(100),
     instructions varchar(1500),
+    calories int,
     constraint pkk_name foreign key(username) references users(username))
 ''')
 cursor = conn.cursor(buffered=True)
+def foodinstra():
+    wordsL = NomInstra.split()
+    s = 0
+    line = ''
+    for i in range(len(wordsL)):
+        s += 1
+        if s == 10:
+            s = 0
+            wordsL.insert(i, '\n')
+    for j in wordsL:
+        line += j + ' '
+    pil_imagee = os.path.join(os.path.dirname(__file__), 'images\\food.png')
+    imageepath = im.open(pil_imagee)
+    imagee = customtkinter.CTkImage(light_image=imageepath, size=(980, 560))
+    customtkinter.CTkLabel(app, image=imagee, text='').place(x=0, y=0)
+    frame02 = customtkinter.CTkFrame(app, corner_radius=15,
+                                     bg_color='#1a1a1a', fg_color='#1a1a1a',
+                                     border_width=2,
+                                     width=520, height=510
+                                     )
+    frame02.place(relx=0.5, rely=0.5, anchor=CENTER)
+    customtkinter.CTkLabel(frame02, text='Instructions', bg_color='#1a1a1a', font=('Impact', 27)).pack(expand=True,
+                                                                                                       fill='x')
+    lab = customtkinter.CTkLabel(frame02, text=f'{line}', bg_color='#1a1a1a', font=('Arial', 17))
+    lab.pack(expand=True, fill='both')
+    customtkinter.CTkButton(app, text='<<Back', width=150, height=30, font=font3, cursor='hand2',
+                            corner_radius=10, command=foodtask).place(relx=0.5, rely=0.95, anchor=CENTER)
+def foodtask():
+    global meal,NomInstra
+    frame01 = customtkinter.CTkFrame(app,
+                                     width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                     )
+    frame01.place(x=0, y=0)
+    try:
+        date = datfoaname.get()
+        if date not in listofFodate:
+            raise checc.customerror
+        day = date.split()
+        choice = day[0] + ' ' + day[1] + ' ' + day[2]
+        year = day[4]
+        cursor.execute(f"select count(times) from fooddata where username=%s and times like '%{choice}%' "
+                       f"and times like '%{year}%'", [username])
+        response = cursor.fetchall()
+        meal = response[0][0]
+        cursor.execute("select * from fooddata where username = %s and times = %s", [username, date])
+        response = cursor.fetchone()
+        catfood = response[1]
+        Nomfood = response[2]
+        NomIngre = response[4]
+        Nomserv = response[5]
+        NomInstra = response[6]
+        customtkinter.CTkLabel(frame01, text='Food category :', font=('Impact', 20, 'bold'), text_color='yellow').place(
+            relx=0.3, y=80)
+        customtkinter.CTkLabel(frame01, text=f'{catfood}', font=('Arial', 20, 'bold'), text_color='#7adb25').place(
+            x=450, y=80)
+        customtkinter.CTkLabel(frame01, text='Food name :', font=('Impact', 20, 'bold'),
+                               text_color='yellow').place(
+            relx=0.3, y=140)
+        customtkinter.CTkLabel(frame01, text=f"{Nomfood}", font=('Arial', 20, 'bold'), text_color='#7adb25').place(
+            x=430, y=140)
+        customtkinter.CTkLabel(frame01, text='Serving number :', font=('Impact', 20, 'bold'),
+                               text_color='yellow').place(relx=0.3, y=200)
+        customtkinter.CTkLabel(frame01, text=f'{Nomserv}', font=('Arial', 20, 'bold'), text_color='#7adb25').place(
+            x=460, y=200)
+        customtkinter.CTkButton(frame01, text='See Ingradients', width=150, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,).place(relx=0.5, rely=0.60, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='See Instructions', width=150, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,command=foodinstra).place(relx=0.5, rely=0.72, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='Main page', width=150, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,command=back).place(relx=0.2, rely=0.9, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<<Back', width=150, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=foodw).place(relx=0.8, rely=0.9, anchor=CENTER)
+    except checc.customerror:
+        messagebox.showerror('erreur', 'date doesn''t exist')
+    except Exception as e:
+        messagebox.showerror('erreur', e)
 def foodw():
     global datfoaname, listofFodate
     try:
@@ -98,7 +175,7 @@ def foodw():
         name.place(relx=0.5, y=200, anchor=CENTER)
         name.set(listofFodate[0])
         customtkinter.CTkButton(frame01, text='Select Date', width=160, height=40, font=font3, cursor='hand2',
-                                corner_radius=10).place(relx=0.5, y=300, anchor=CENTER)
+                                corner_radius=10,command=foodtask).place(relx=0.5, y=300, anchor=CENTER)
         customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
                                 corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
         customtkinter.CTkButton(frame01, text='<<Back', width=160, height=40, font=font3, cursor='hand2',
@@ -116,8 +193,8 @@ def fooddata():
         ingredients = food.foodingredients(categorie,foodnames)
         servings = food.foodserving(categorie,foodnames)
         instruction = food.foodinstra(categorie,foodnames)
-        cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
-                                                                                  servings, instruction])
+        cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
+                                                                                  servings, instruction,None])
         conn.commit()
         messagebox.showinfo('info','the food has been added to your programme')
         back()
