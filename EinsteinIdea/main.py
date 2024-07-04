@@ -11,6 +11,7 @@ import calcul
 import die
 import time
 import os
+import food
 excercice = 0
 meal = 0
 app = customtkinter.CTk()
@@ -63,8 +64,113 @@ cursor.execute('''
     instruction varchar(1500),
     constraint pk_name foreign key(username) references users(username))
 ''')
-
+cursor.execute('''
+    create table if not exists fooddata(
+    username varchar(100),
+    categorie varchar(100),
+    foodname varchar(150),
+    times varchar(100),
+    ingredients varchar(800),
+    servings varchar(100),
+    instructions varchar(1500),
+    constraint pkk_name foreign key(username) references users(username))
+''')
 cursor = conn.cursor(buffered=True)
+def foodw():
+    global datfoaname, listofFodate
+    try:
+        listofFodate = []
+        frame01 = customtkinter.CTkFrame(app,
+                                         width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                         )
+        frame01.place(x=0, y=0)
+        customtkinter.CTkLabel(frame01, text='Choose Date', font=font2).place(relx=0.5, y=82, anchor=CENTER)
+        cursor.execute("select times from fooddata where username = %s", [username])
+        response = cursor.fetchall()
+        for date in response:
+            listofFodate.append(date[0])
+        if len(listofFodate) == 0:
+            raise checc.customerror
+        datfoaname = StringVar()
+        name = customtkinter.CTkComboBox(frame01, values=listofFodate, bg_color='#1a1a1a', width=200, height=40,
+                                         variable=datfoaname,
+                                         font=font3)
+        name.place(relx=0.5, y=200, anchor=CENTER)
+        name.set(listofFodate[0])
+        customtkinter.CTkButton(frame01, text='Select Date', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10).place(relx=0.5, y=300, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<<Back', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=programme).place(relx=0.5, y=460, anchor=CENTER)
+    except checc.customerror:
+        messagebox.showerror('error', 'No date found')
+        programme()
+def fooddata():
+    try:
+        categorie = catego
+        foodnames = foodc.get()
+        if foodnames not in foodslist:
+            raise checc.customerror
+        times = time.ctime()
+        ingredients = food.foodingredients(categorie,foodnames)
+        servings = food.foodserving(categorie,foodnames)
+        instruction = food.foodinstra(categorie,foodnames)
+        cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
+                                                                                  servings, instruction])
+        conn.commit()
+        messagebox.showinfo('info','the food has been added to your programme')
+        back()
+    except checc.customerror:
+        messagebox.showerror('erreur', 'Choisir un nom convenable')
+        foodselected()
+
+
+def foodselected():
+    global foodc,foodslist,catego
+    catego = foodname.get()
+    foodslist = food.foodr(catego)
+    try:
+        if len(foodslist) == 0:
+            raise checc.customerror
+        frame01 = customtkinter.CTkFrame(app,
+                                         width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                         )
+        frame01.place(x=0, y=0)
+        customtkinter.CTkLabel(frame01, text='Choose name', font=font2).place(relx=0.5, y=82, anchor=CENTER)
+        foodc = StringVar()
+        name = customtkinter.CTkComboBox(frame01, values=foodslist, bg_color='#1a1a1a', width=200, height=40,
+                                         variable=foodc,
+                                         font=font3)
+        name.place(relx=0.5, y=200, anchor=CENTER)
+        name.set(foodslist[0])
+        customtkinter.CTkButton(frame01, text='Select name', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10,command=fooddata).place(relx=0.5, y=300, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
+        customtkinter.CTkButton(frame01, text='<< Back', width=160, height=40, font=font3, cursor='hand2',
+                                corner_radius=10, command=foodsection).place(relx=0.5, y=460, anchor=CENTER)
+    except checc.customerror:
+        messagebox.showerror('erreur','food not found')
+        foodsection()
+def foodsection():
+    global foodname
+    frame01 = customtkinter.CTkFrame(app,
+                                     width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
+                                     )
+    frame01.place(x=0, y=0)
+    customtkinter.CTkLabel(frame01, text='Choose Food', font=font2).place(relx=0.5, y=82, anchor=CENTER)
+    foodname = customtkinter.CTkEntry(frame01, text_color="#ffffff", placeholder_text='Food name', width=180,height=40,
+                                      font=('Arial', 19, 'normal'), border_width=3, bg_color='#1a1a1a',
+                                      fg_color='#1a1a1a',
+                                      corner_radius=13,
+                                      border_color="#001220"
+                                      )
+    foodname.place(relx=0.5, y=200, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Select Food', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10,command=foodselected).place(relx=0.5, y=300, anchor=CENTER)
+    customtkinter.CTkButton(frame01, text='Main page', width=160, height=40, font=font3, cursor='hand2',
+                            corner_radius=10, command=back).place(relx=0.5, y=380, anchor=CENTER)
 def InstraFrame():
     wordsL = NomInstra.split()
     s = 0
@@ -159,7 +265,7 @@ def programme():
                                      )
     frame01.place(x=0, y=0)
     customtkinter.CTkButton(frame01, text='Food', width=190, height=50, font=font3, cursor='hand2',
-                            corner_radius=10).place(relx=0.5, rely=0.37, anchor=CENTER)
+                            corner_radius=10,command=foodw).place(relx=0.5, rely=0.37, anchor=CENTER)
     customtkinter.CTkButton(frame01, text='Workout', width=190, height=50, font=font3, cursor='hand2',
                             corner_radius=10, command=programw).place(relx=0.5, rely=0.52, anchor=CENTER)
     customtkinter.CTkButton(frame01, text='Main page', width=190, height=50, font=font3, cursor='hand2',
@@ -209,6 +315,7 @@ def workdata():
         cursor.execute('insert into workstable values(%s,%s,%s,%s,%s,%s,%s,%s)',[username,exnamed,times,typ,muscle,
                                                                         equi,diff,instra])
         conn.commit()
+        messagebox.showinfo('info', 'The excercice has been added to your programme')
         back()
     except checc.customerror:
         messagebox.showerror('erreur','Choisir un nom convenable')
@@ -294,7 +401,7 @@ def openButton():
                             text_color='#195e94',corner_radius=0,image=image17).place(relx=0.5,y=145,anchor=CENTER)
     customtkinter.CTkButton(frame4,text='Food',font= ('Arial', 27, 'bold'),
                             fg_color='#262626',width=250,
-                            bg_color='#262626',hover_color='#1a1919',
+                            bg_color='#262626',hover_color='#1a1919',command=foodsection,
                             text_color='#195e94',corner_radius=0,image=image18).place(relx=0.5,y=210,anchor=CENTER)
     customtkinter.CTkButton(frame4, text='WorkOut', font=('Arial', 27, 'bold'),
                             fg_color='#262626', width=250,
