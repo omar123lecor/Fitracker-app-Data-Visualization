@@ -12,6 +12,7 @@ import die
 import time
 import os
 import food
+import metafood
 excercice = 0
 meal = 0
 app = customtkinter.CTk()
@@ -73,10 +74,50 @@ cursor.execute('''
     ingredients varchar(800),
     servings varchar(100),
     instructions varchar(1500),
-    calories int,
     constraint pkk_name foreign key(username) references users(username))
 ''')
+cursor.execute('''
+    create table if not exists foodcont(
+    username varchar(100),
+    times varchar(100),
+    foodname varchar(150),
+    calories float,
+    protein float,
+    carbs float,
+    fats float,
+    constraint pko_name foreign key(username) references users(username))
+''')
 cursor = conn.cursor(buffered=True)
+def foodingre():
+    global NomIngre
+    wordsL = NomIngre.split()
+    s = 0
+    line = ''
+    for i in range(len(wordsL)):
+        s += 1
+        if s == 10:
+            s = 0
+            wordsL.insert(i, '\n')
+    for j in wordsL:
+        line += j + ' '
+    pil_imagee = os.path.join(os.path.dirname(__file__), 'images\\food.png')
+    imageepath = im.open(pil_imagee)
+    imagee = customtkinter.CTkImage(light_image=imageepath, size=(980, 560))
+    customtkinter.CTkLabel(app, image=imagee, text='').place(x=0, y=0)
+    frame02 = customtkinter.CTkFrame(app, corner_radius=15,
+                                     bg_color='#1a1a1a', fg_color='#1a1a1a',
+                                     border_width=2,
+                                     width=520, height=510
+                                     )
+    frame02.place(relx=0.5, rely=0.5, anchor=CENTER)
+    customtkinter.CTkLabel(frame02, text='Ingredient', bg_color='#1a1a1a', font=('Impact', 27)).pack(expand=True,
+                                                                                                       fill='x')
+    lab = customtkinter.CTkTextbox(frame02, bg_color='#1a1a1a', font=('Arial', 17),width=400,height=300)
+    lab.insert(tkinter.END,f"{line}")
+    lab.configure(state='disabled')
+    lab.pack(expand=True, fill='both')
+    customtkinter.CTkButton(app, text='<<Back', width=150, height=30, font=font3, cursor='hand2',
+                            corner_radius=10, command=foodtask).place(relx=0.5, rely=0.95, anchor=CENTER)
 def foodinstra():
     wordsL = NomInstra.split()
     s = 0
@@ -105,7 +146,8 @@ def foodinstra():
     customtkinter.CTkButton(app, text='<<Back', width=150, height=30, font=font3, cursor='hand2',
                             corner_radius=10, command=foodtask).place(relx=0.5, rely=0.95, anchor=CENTER)
 def foodtask():
-    global meal,NomInstra
+    global NomInstra,NomIngre
+    global meal
     frame01 = customtkinter.CTkFrame(app,
                                      width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
                                      )
@@ -115,9 +157,12 @@ def foodtask():
         if date not in listofFodate:
             raise checc.customerror
         day = date.split()
-        choice = day[0] + ' ' + day[1] + ' ' + day[2]
+        if len(day[2])==1:
+            choice = day[0] + ' ' + day[1] + '  ' + day[2]
+        else:
+            choice = day[0] + ' ' + day[1] + ' ' + day[2]
         year = day[4]
-        cursor.execute(f"select count(times) from fooddata where username=%s and times like '%{choice}%' "
+        cursor.execute(f"select count(times) from fooddata where username=%s and times like '%{choice}%'"
                        f"and times like '%{year}%'", [username])
         response = cursor.fetchall()
         meal = response[0][0]
@@ -142,7 +187,7 @@ def foodtask():
         customtkinter.CTkLabel(frame01, text=f'{Nomserv}', font=('Arial', 20, 'bold'), text_color='#7adb25').place(
             x=460, y=200)
         customtkinter.CTkButton(frame01, text='See Ingradients', width=150, height=40, font=font3, cursor='hand2',
-                                corner_radius=10,).place(relx=0.5, rely=0.60, anchor=CENTER)
+                                corner_radius=10,command=foodingre).place(relx=0.5, rely=0.60, anchor=CENTER)
         customtkinter.CTkButton(frame01, text='See Instructions', width=150, height=40, font=font3, cursor='hand2',
                                 corner_radius=10,command=foodinstra).place(relx=0.5, rely=0.72, anchor=CENTER)
         customtkinter.CTkButton(frame01, text='Main page', width=150, height=40, font=font3, cursor='hand2',
@@ -151,6 +196,7 @@ def foodtask():
                                 corner_radius=10, command=foodw).place(relx=0.8, rely=0.9, anchor=CENTER)
     except checc.customerror:
         messagebox.showerror('erreur', 'date doesn''t exist')
+        foodw()
     except Exception as e:
         messagebox.showerror('erreur', e)
 def foodw():
@@ -193,9 +239,10 @@ def fooddata():
         ingredients = food.foodingredients(categorie,foodnames)
         servings = food.foodserving(categorie,foodnames)
         instruction = food.foodinstra(categorie,foodnames)
-        cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
-                                                                                  servings, instruction,None])
+        cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
+                                                                                  servings, instruction])
         conn.commit()
+        metafood.userfd(username,times,foodnames,ingredients,servings[0])
         messagebox.showinfo('info','the food has been added to your programme')
         back()
     except checc.customerror:
@@ -293,7 +340,10 @@ def worktask():
         if date not in listofdate:
             raise checc.customerror
         day = date.split()
-        choice = day[0]+' '+day[1]+' '+day[2]
+        if len(day[2]) == 1:
+            choice = day[0] + ' ' + day[1] + '  ' + day[2]
+        else:
+            choice = day[0] + ' ' + day[1] + ' ' + day[2]
         year = day[4]
         cursor.execute(f"select count(times) from workstable where username=%s and times like '%{choice}%' "
                        f"and times like '%{year}%'",[username])
@@ -474,7 +524,7 @@ def openButton():
     Frame(frame4,width=380,height=10,bg='#001220').place(x=0,y=124)
     customtkinter.CTkButton(frame4,text='Home',font= ('Arial', 27, 'bold'),
                             fg_color='#262626',width=250,
-                            bg_color='#262626',hover_color='#1a1919',
+                            bg_color='#262626',hover_color='#1a1919',command=MyAccount,
                             text_color='#195e94',corner_radius=0,image=image17).place(relx=0.5,y=145,anchor=CENTER)
     customtkinter.CTkButton(frame4,text='Food',font= ('Arial', 27, 'bold'),
                             fg_color='#262626',width=250,
