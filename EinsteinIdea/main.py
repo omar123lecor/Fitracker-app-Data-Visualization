@@ -518,50 +518,61 @@ def openButton():
     image21 = customtkinter.CTkImage(pil17)
     pil18 = im.open('images\logout.png')
     image22 = customtkinter.CTkImage(pil18)
-    frame4 = customtkinter.CTkFrame(frame3, width=250, height=980, bg_color='#262626', fg_color='#262626')
+    frame4 = customtkinter.CTkFrame(frame3, width=150, height=980, bg_color='#262626', fg_color='#262626')
     frame4.place(x=0, y=0)
     customtkinter.CTkLabel(frame4,text='Menu',font=('Arial', 34, 'italic','bold'),text_color='#748498').place(relx=0.5,y=39,anchor=CENTER)
     Frame(frame4,width=380,height=10,bg='#001220').place(x=0,y=124)
     customtkinter.CTkButton(frame4,text='Home',font= ('Arial', 27, 'bold'),
-                            fg_color='#262626',width=250,
+                            fg_color='#262626',width=150,
                             bg_color='#262626',hover_color='#1a1919',command=MyAccount,
                             text_color='#195e94',corner_radius=0,image=image17).place(relx=0.5,y=145,anchor=CENTER)
     customtkinter.CTkButton(frame4,text='Food',font= ('Arial', 27, 'bold'),
-                            fg_color='#262626',width=250,
+                            fg_color='#262626',width=150,
                             bg_color='#262626',hover_color='#1a1919',command=foodsection,
                             text_color='#195e94',corner_radius=0,image=image18).place(relx=0.5,y=210,anchor=CENTER)
     customtkinter.CTkButton(frame4, text='WorkOut', font=('Arial', 27, 'bold'),
-                            fg_color='#262626', width=250,
+                            fg_color='#262626', width=150,
                             bg_color='#262626', hover_color='#1a1919',
                             text_color='#195e94', corner_radius=0,image=image19,
                             command=workout).place(relx=0.5, y=275, anchor=CENTER)
     customtkinter.CTkButton(frame4, text='Program', font=('Arial', 27, 'bold'),
-                            fg_color='#262626', width=250,
+                            fg_color='#262626', width=150,
                             bg_color='#262626', hover_color='#1a1919',
                             text_color='#195e94', corner_radius=0, image=image20,
                             command=programme).place(relx=0.5, y=340, anchor=CENTER)
     customtkinter.CTkButton(frame4, text='Edit', font=('Arial', 27, 'bold'),
-                            fg_color='#262626', width=250,
+                            fg_color='#262626', width=150,
                             bg_color='#262626', hover_color='#1a1919',command=editing,
                             text_color='#195e94', corner_radius=0, image=image21).place(relx=0.5, y=405, anchor=CENTER)
     customtkinter.CTkButton(frame4, text='Log out', font=('Arial', 27, 'bold'),
-                            fg_color='#262626', width=250,
+                            fg_color='#262626', width=150,
                             bg_color='#262626', hover_color='#1a1919',
                             text_color='#195e94', corner_radius=0, image=image22,
                             command=logout).place(relx=0.5, y=470, anchor=CENTER)
-    def closeButton():
+    '''def closeButton():
         frame4.destroy()
     customtkinter.CTkButton(frame4,text='',bg_color='#262626',fg_color='#262626',
                             hover_color='#262626',command=closeButton,
-                            image=image10,width=20).place(x=220,y=0)
+                            image=image10,width=20).place(x=220,y=0)'''
 #connected
 def MyAccount():
     global frame3,image11,image10,frame5,tdeee,excercice,meal
+    image_path = 'images\image_12.png'
+    pilll = im.open(image_path)
+    image00 = ImageTk.PhotoImage(pilll)
     tdeee = calcul.apiTDEE(age,gender,height,weight,activity)
     frame2.destroy()
     frame3 = customtkinter.CTkFrame(app,bg_color='#001220',fg_color='#001220',
                                 width=980,height=560)
     frame3.place(x=0,y=0)
+    frame03 = customtkinter.CTkFrame(app, bg_color='#262626', fg_color='#262626',
+                                    width=360, height=100)
+    frame03.place(relx=0.5, rely=0.07,anchor=CENTER)
+    ok = Label(frame03,image=image00,fg='#262626',bg='#262626')
+    ok.image = image00
+    ok.place(relx=0.3,rely=0.5,anchor=CENTER)
+    customtkinter.CTkLabel(frame03,text='PyDash',
+                           font=('Impact',30,'bold'),text_color='black').place(relx=0.55,rely=0.5,anchor=CENTER)
     pil_image = im.open('images\open.png')
     pil2_image = im.open('images\closee.png')
     image11 = customtkinter.CTkImage(pil_image)
@@ -574,10 +585,51 @@ def MyAccount():
     image20 = customtkinter.CTkImage(pil20)
     pil21 = im.open('images\person-running-solid.png')
     image21 = customtkinter.CTkImage(pil21)
-    customtkinter.CTkButton(frame3, command=openButton, text='',
-                            image=image11, hover_color='#262626',
-                            width=20, bg_color='#262626',
-                            fg_color='#262626').place(x=0, y=0)
+    global frame4
+    pil3 = im.open('images\house-solid.png')
+    image17 = customtkinter.CTkImage(pil3)
+    pil4 = im.open('images\\utensils-solid.png')
+    image18 = customtkinter.CTkImage(pil4)
+    pil5 = im.open('images\woorkout.png')
+    image19 = customtkinter.CTkImage(pil5)
+    pil6 = im.open('images\calendar-days-solid.png')
+    image20 = customtkinter.CTkImage(pil6)
+    pil17 = im.open('images\\file-pen-solid.png')
+    image21 = customtkinter.CTkImage(pil17)
+    pil18 = im.open('images\logout.png')
+    image22 = customtkinter.CTkImage(pil18)
+    frame4 = customtkinter.CTkFrame(frame3, width=150, height=980, bg_color='#262626', fg_color='#262626')
+    frame4.place(x=0, y=0)
+    customtkinter.CTkLabel(frame4, text='Menu', font=('Arial', 34, 'italic', 'bold'), text_color='#748498').place(
+        relx=0.5, y=39, anchor=CENTER)
+    Frame(frame4, width=380, height=10, bg='#001220').place(x=0, y=124)
+    customtkinter.CTkButton(frame4, text='Home', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919', command=MyAccount,
+                            text_color='#195e94', corner_radius=0, image=image17).place(relx=0.5, y=145, anchor=CENTER)
+    customtkinter.CTkButton(frame4, text='Food', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919', command=foodsection,
+                            text_color='#195e94', corner_radius=0, image=image18).place(relx=0.5, y=210, anchor=CENTER)
+    customtkinter.CTkButton(frame4, text='WorkOut', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919',
+                            text_color='#195e94', corner_radius=0, image=image19,
+                            command=workout).place(relx=0.5, y=275, anchor=CENTER)
+    customtkinter.CTkButton(frame4, text='Program', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919',
+                            text_color='#195e94', corner_radius=0, image=image20,
+                            command=programme).place(relx=0.5, y=340, anchor=CENTER)
+    customtkinter.CTkButton(frame4, text='Edit', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919', command=editing,
+                            text_color='#195e94', corner_radius=0, image=image21).place(relx=0.5, y=405, anchor=CENTER)
+    customtkinter.CTkButton(frame4, text='Log out', font=('Arial', 23, 'bold'),
+                            fg_color='#262626', width=150,
+                            bg_color='#262626', hover_color='#1a1919',
+                            text_color='#195e94', corner_radius=0, image=image22,
+                            command=logout).place(relx=0.5, y=470, anchor=CENTER)
     frame5 = customtkinter.CTkFrame(frame3, width=170, height=980, bg_color='#262626', fg_color='#262626')
     frame5.place(x=810,y=0)
     customtkinter.CTkLabel(frame5,text='Fit-Data',text_color='#748498',font=('Comic Sans MS',25,'bold'),
