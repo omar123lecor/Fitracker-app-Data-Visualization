@@ -13,8 +13,14 @@ import time
 import os
 import food
 import metafood
+import MyPlotData
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 excercice = 0
 meal = 0
+conteur = 0
+date = time.ctime()
 app = customtkinter.CTk()
 app.title('My Tracker app')
 app.geometry('980x560')
@@ -147,7 +153,7 @@ def foodinstra():
                             corner_radius=10, command=foodtask).place(relx=0.5, rely=0.95, anchor=CENTER)
 def foodtask():
     global NomInstra,NomIngre
-    global meal
+    global meal,date
     frame01 = customtkinter.CTkFrame(app,
                                      width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
                                      )
@@ -383,9 +389,6 @@ def worktask():
         messagebox.showerror('erreur','date doesn''t exist')
     except Exception as e:
         messagebox.showerror('erreur',e)
-
-
-
 def programme():
     frame01 = customtkinter.CTkFrame(app,
                                      width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
@@ -499,8 +502,12 @@ def workout():
 def editing():
     forme()
 def logout():
+    global meal,excercice
     if messagebox.askyesno('Log out','Sure ! You wanna quit?'):
         frame3.destroy()
+        meal = 0
+        excercice = 0
+        conteur = 0
         raise1()
     else:
         pass
@@ -556,7 +563,9 @@ def openButton():
                             image=image10,width=20).place(x=220,y=0)'''
 #connected
 def MyAccount():
-    global frame3,image11,image10,frame5,tdeee,excercice,meal
+    global frame3,image11,image10,frame5,tdeee,excercice,meal,date,conteur
+    cursor.execute("select count(*) from foodcont where username = %s",[username])
+    resp = cursor.fetchone()
     image_path = 'images\image_12.png'
     pilll = im.open(image_path)
     image00 = ImageTk.PhotoImage(pilll)
@@ -572,19 +581,19 @@ def MyAccount():
     ok.image = image00
     ok.place(relx=0.3,rely=0.5,anchor=CENTER)
     customtkinter.CTkLabel(frame03,text='PyDash',
-                           font=('Impact',30,'bold'),text_color='black').place(relx=0.55,rely=0.5,anchor=CENTER)
+                           font=('Impact',33,'bold'),text_color='black').place(relx=0.55,rely=0.5,anchor=CENTER)
     pil_image = im.open('images\open.png')
     pil2_image = im.open('images\closee.png')
     image11 = customtkinter.CTkImage(pil_image)
     image10 = customtkinter.CTkImage(pil2_image)
     pil18 = im.open('images\poulet.png')
-    image18 = customtkinter.CTkImage(pil18)
+    image08 = customtkinter.CTkImage(pil18)
     pil19 = im.open('images\\fire.png')
-    image19 = customtkinter.CTkImage(pil19)
+    image09 = customtkinter.CTkImage(pil19)
     pil20 = im.open('images\\bmi.png')
-    image20 = customtkinter.CTkImage(pil20)
+    image02 = customtkinter.CTkImage(pil20)
     pil21 = im.open('images\person-running-solid.png')
-    image21 = customtkinter.CTkImage(pil21)
+    image021 = customtkinter.CTkImage(pil21)
     global frame4
     pil3 = im.open('images\house-solid.png')
     image17 = customtkinter.CTkImage(pil3)
@@ -637,13 +646,13 @@ def MyAccount():
     Frame(frame5,width=280,height=10,bg='#001220').place(x=0,y=124)
     customtkinter.CTkLabel(frame5,text='Meal',text_color='#195e94',font=('Comfortaa',24,'bold'),
                            bg_color='#262626',fg_color='#262626').place(relx=0.6,y=120,anchor=CENTER)
-    customtkinter.CTkLabel(frame5,image=image18,text='',bg_color='#262626',fg_color='#262626',
+    customtkinter.CTkLabel(frame5,image=image08,text='',bg_color='#262626',fg_color='#262626',
                            font=('Comfortaa',24,'bold')).place(relx=0.3,y=120,anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=f'{meal}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=155, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=' Excercice', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=200, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, image=image19, text='', bg_color='#262626', fg_color='#262626',
+    customtkinter.CTkLabel(frame5, image=image09, text='', bg_color='#262626', fg_color='#262626',
                            font=('Comfortaa', 24, 'bold')).place(relx=0.2, y=200, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=f'{excercice}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=240, anchor=CENTER)
@@ -652,7 +661,7 @@ def MyAccount():
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=285, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=f"{calcul.apiBMI(height,weight)}", text_color='#327039', font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=325, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, image=image20, text='', bg_color='#262626', fg_color='#262626',
+    customtkinter.CTkLabel(frame5, image=image02, text='', bg_color='#262626', fg_color='#262626',
                            font=('Comfortaa', 24, 'bold')).place(relx=0.3, y=285, anchor=CENTER)
     #----------------------------TDEE------------------------------------------------------------------------------------------
     customtkinter.CTkLabel(frame5, text='TDEE', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
@@ -660,7 +669,7 @@ def MyAccount():
     customtkinter.CTkLabel(frame5, text=f"{calcul.apiTDEE(age,gender,height,weight,activity)}", text_color='#327039',
                            font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=410, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, image=image21, text='', bg_color='#262626', fg_color='#262626',
+    customtkinter.CTkLabel(frame5, image=image021, text='', bg_color='#262626', fg_color='#262626',
                            font=('Comfortaa', 24, 'bold')).place(relx=0.3, y=370, anchor=CENTER)
     # ----------------------------Conclusion------------------------------------------------------------------------------------------
     customtkinter.CTkLabel(frame5, text='Body-state', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
@@ -668,6 +677,37 @@ def MyAccount():
     customtkinter.CTkLabel(frame5, text=f"{calcul.apiconc(height, weight)}", text_color='#327039',
                            font=('Comfortaa', 24, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=495, anchor=CENTER)
+    if resp[0] == 0:
+        messagebox.showinfo('No Data','There no data to visualize')
+    elif meal == 0 and conteur == 0:
+        messagebox.showinfo('Check programme','You can choose a date from programme button for visualizing purposes')
+    else:
+        pass
+    liste01 = ["prot","fats","carbs"]
+    liste02 = MyPlotData.plotdata(username,date)
+    if None in liste02:
+        liste02 = []
+        fig1 = Figure(figsize=(2.5, 2.5), facecolor="#262626")
+        ax_1 = fig1.add_subplot()
+        ax_1.set_title('macro nutrition')
+        ax_1.set_facecolor('#262626')
+        ax_1.pie(liste02,autopct='%1.1f%%')
+        canvas = FigureCanvasTkAgg(figure=fig1, master=app)
+        canvas.draw()
+        canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)
+    else:
+        liste02 = liste02[0:3]
+        fig1 = Figure(figsize=(3.0, 3.5), facecolor="#262626")
+        plt.rcParams["axes.prop_cycle"] = plt.cycler(
+            color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
+        ax_1 = fig1.add_subplot()
+        ax_1.set_title('macro nutrition')
+        ax_1.set_facecolor('#262626')
+        ax_1.pie(liste02, labels=liste01, autopct='%1.1f%%')
+        canvas = FigureCanvasTkAgg(figure=fig1, master=app)
+        canvas.draw()
+        canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)
+        conteur += 1
 def check():
     global cursor, conn,weight,height,gender,age,activity
     protein = var_prot.get()
