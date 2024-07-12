@@ -19,4 +19,5 @@ def plotdata(username,date):
 		f"select sum(protein),sum(fats),sum(carbs),sum(calories) from foodcont where username=%s and times like '%{choice}%' and times like'%{year}%'",[username])
 	response = cursor.fetchone()
 	return [response[0],response[1],response[2],response[3]]
-print(plotdata('omar',time.ctime()))
+
+print(plotdata('salim',time.ctime()))

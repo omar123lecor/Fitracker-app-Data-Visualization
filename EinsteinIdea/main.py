@@ -8,12 +8,18 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import ImageTk,Image as im
 import calcul
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
 import die
 import time
 import os
 import food
-import metafood
-import MyPlotData
+#import metafood
+#import MyPlotData
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -94,6 +100,45 @@ cursor.execute('''
     constraint pko_name foreign key(username) references users(username))
 ''')
 cursor = conn.cursor(buffered=True)
+def plotdata(username,date):
+    day = date.split()
+    if len(day[2]) == 1:
+        choice = day[0] + ' ' + day[1] + '  ' + day[2]
+    else:
+        choice = day[0] + ' ' + day[1] + ' ' + day[2]
+    year = day[4]
+    cursor.execute(
+        f"select sum(protein),sum(fats),sum(carbs),sum(calories) from foodcont where username=%s and times like '%{choice}%' and times like'%{year}%'",[username])
+    response = cursor.fetchone()
+    return [response[0],response[1],response[2],response[3]]
+def userfd(usernmae,time,foodname,foodingredient,servingn):
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        service = Service(executable_path='chromedriver.exe')
+        driver = webdriver.Chrome(service=service,options=chrome_options)
+        driver.get("https://happyforks.com/analyzer")
+        input_element = driver.find_element(By.ID, "recipe-text")
+        input_element.send_keys(foodingredient)
+        servin_num = driver.find_element(By.ID, "recipe-servings")
+        servin_num.clear()
+        servin_num.send_keys(servingn)
+        search = driver.find_element(By.XPATH, "//button[@class='gfx gfx-lock']/span")
+        search.click()
+        WebDriverWait(driver, 5).until(
+            ec.presence_of_element_located((By.XPATH, "//span[@class='label']/span[not(@class)]"))
+        )
+        data = driver.find_elements(By.XPATH, "//span[@class='label' or @class='label cols-2']/span[not(@class)]")
+        liste = []
+        for don in data:
+            liste.append(don.text)
+        cursor.execute("insert into foodcont values(%s,%s,%s,%s,%s,%s,%s)",[usernmae,time,foodname,float(liste[0]),float(liste[1]),float(liste[3]),float(liste[2])])
+    finally:
+        driver.quit()
+        conn.commit()
+
 def foodingre():
     global NomIngre
     wordsL = NomIngre.split()
@@ -248,7 +293,7 @@ def fooddata():
         cursor.execute('insert into fooddata values(%s,%s,%s,%s,%s,%s,%s)', [username, categorie, foodnames, times, ingredients,
                                                                                   servings, instruction])
         conn.commit()
-        metafood.userfd(username,times,foodnames,ingredients,servings[0])
+        userfd(username,times,foodnames,ingredients,servings[0])
         messagebox.showinfo('info','the food has been added to your programme')
         back()
     except checc.customerror:
@@ -502,12 +547,13 @@ def workout():
 def editing():
     forme()
 def logout():
-    global meal,excercice
+    global meal,excercice,conteur,date
     if messagebox.askyesno('Log out','Sure ! You wanna quit?'):
         frame3.destroy()
         meal = 0
         excercice = 0
         conteur = 0
+        date = time.ctime()
         raise1()
     else:
         pass
@@ -684,30 +730,38 @@ def MyAccount():
     else:
         pass
     liste01 = ["prot","fats","carbs"]
-    liste02 = MyPlotData.plotdata(username,date)
+    liste02 = plotdata(username,date)
     if None in liste02:
         liste02 = []
-        fig1 = Figure(figsize=(2.5, 2.5), facecolor="#262626")
+        fig1 = Figure(figsize=(2.5, 2.5), facecolor="#001220")
         ax_1 = fig1.add_subplot()
         ax_1.set_title('macro nutrition')
-        ax_1.set_facecolor('#262626')
+        ax_1.set_facecolor('#001220')
         ax_1.pie(liste02,autopct='%1.1f%%')
         canvas = FigureCanvasTkAgg(figure=fig1, master=app)
         canvas.draw()
         canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)
     else:
         liste02 = liste02[0:3]
-        fig1 = Figure(figsize=(3.0, 3.5), facecolor="#262626")
+        fig1 = Figure(figsize=(3.0, 4), facecolor="#001220")
         plt.rcParams["axes.prop_cycle"] = plt.cycler(
             color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
         ax_1 = fig1.add_subplot()
-        ax_1.set_title('macro nutrition')
-        ax_1.set_facecolor('#262626')
-        ax_1.pie(liste02, labels=liste01, autopct='%1.1f%%')
+        title_font = {'fontsize': 17, 'fontweight': 'bold', 'color': 'white', 'fontname': 'Arial'}
+        ax_1.set_title('Macronutrients', fontdict=title_font,pad=30)
+        ax_1.set_facecolor('#001220')
+        ax_1.pie(liste02, labels=liste01, autopct='%1.1f%%',textprops={'color': 'white','fontsize': 15,'fontname':'Arial'})
         canvas = FigureCanvasTkAgg(figure=fig1, master=app)
         canvas.draw()
-        canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)
-        conteur += 1
+        canvas.get_tk_widget().place(relx=0.28, rely=0.6,anchor=CENTER)
+        cursor.execute("select fatGoel,carbsGoel,proteinGol,caloriGoel from usersdata where username = %s",[username])
+        respon = cursor.fetchone()
+        liste03 = [respon[2],respon[0],respon[1]]
+        fig2 = Figure(figsize=(3.0, 4), facecolor="#001220")
+        ax_2 = fig2.add_subplot()
+        ax_2.set_title("Progress",fontdict=title_font,pad=30)
+        ax_2.set_facecolor('#001220')
+    conteur += 1
 def check():
     global cursor, conn,weight,height,gender,age,activity
     protein = var_prot.get()
@@ -988,18 +1042,23 @@ def forme():
     frame1.destroy();
     global img1, var_weight, var_age, var_name, var_cal, var_prot, var_carb, var_fat, var_weightG, var_x, activ_var, var_height
     img1 = PhotoImage(file="images\pattern.png")
-    frame2 = customtkinter.CTkFrame(app, corner_radius=15,
-                                    fg_color="#2e435c",
-                                    border_width=2,
-                                    bg_color="#11202b",
-                                    width=420, height=510
-                                    )
-    #Label(frame3, image=img1).pack()
-    frame2.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+
     cursor.execute("select username from usersdata where username = %s", (username,))
     result = cursor.fetchone()
     if result is not None:
-        Label(frame3, image=img1 ,background='black').pack()
+        frame0 = customtkinter.CTkFrame(app, bg_color='#001220', fg_color='#001220',
+                                        width=980, height=560)
+        frame0.place(x=0, y=0)
+        Label(frame0, image=img1 ,background='black').place(x=0,y=0)
+        frame2 = customtkinter.CTkFrame(frame0, corner_radius=15,
+                                        fg_color="#2e435c",
+                                        border_width=2,
+                                        bg_color="#11202b",
+                                        width=420, height=510
+                                        )
+        # Label(frame3, image=img1).pack()
+        frame2.place(relx=0.5, rely=0.5, anchor=CENTER)
         cursor.execute("select * from usersdata where username= %s",(username,))
         respnse = cursor.fetchone()
         ogender = respnse[1]
@@ -1120,7 +1179,6 @@ def forme():
                                                command=update)
         submit_label.place(relx=0.7, y=480, anchor=CENTER)
     else:
-        frame2.destroy()
         Label(app, image=img1,background='black').place(x=0,y=0)
         frame2 = customtkinter.CTkFrame(app, corner_radius=15,
                                         fg_color="#2e435c",

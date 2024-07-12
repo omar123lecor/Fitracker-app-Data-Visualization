@@ -7,17 +7,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 import mysql.connector
 from selenium.webdriver.chrome.options import Options
-
 # Configurer les options pour Chrome en mode headless
 
-conn = mysql.connector.connect(
-	user='root',
-	host='localhost',
-	database='fittracker',
-	passwd='omar123Lecor'
-)
-cursor = conn.cursor()
-cursor = conn.cursor(buffered=True)
+
 
 def userfd(usernmae,time,foodname,foodingredient,servingn):
 	chrome_options = Options()
