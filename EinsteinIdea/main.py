@@ -180,7 +180,7 @@ def foodinstra():
             wordsL.insert(i, '\n')
     for j in wordsL:
         line += j + ' '
-    pil_imagee = os.path.join(os.path.dirname(__file__), 'images\\food.png')
+    pil_imagee = os.path.join(os.path.dirname(__file__), 'images\\kitchen.png')
     imageepath = im.open(pil_imagee)
     imagee = customtkinter.CTkImage(light_image=imageepath, size=(980, 560))
     customtkinter.CTkLabel(app, image=imagee, text='').place(x=0, y=0)
@@ -439,12 +439,16 @@ def programme():
                                      width=980, height=560, bg_color='#1a1a1a', fg_color='#1a1a1a'
                                      )
     frame01.place(x=0, y=0)
+    pil_imagee = os.path.join(os.path.dirname(__file__), 'images\\programme.png')
+    imageepath = im.open(pil_imagee)
+    imagee = customtkinter.CTkImage(light_image=imageepath, size=(980, 560))
+    customtkinter.CTkLabel(frame01, image=imagee, text='').place(x=0, y=0)
     customtkinter.CTkButton(frame01, text='Food', width=190, height=50, font=font3, cursor='hand2',
-                            corner_radius=10,command=foodw).place(relx=0.5, rely=0.37, anchor=CENTER)
+                            corner_radius=0,fg_color="#1a73e8",hover_color="#135cbf",command=foodw).place(relx=0.5, rely=0.37, anchor=CENTER)
     customtkinter.CTkButton(frame01, text='Workout', width=190, height=50, font=font3, cursor='hand2',
-                            corner_radius=10, command=programw).place(relx=0.5, rely=0.52, anchor=CENTER)
+                            corner_radius=0, fg_color="#1a73e8", hover_color="#135cbf",command=programw).place(relx=0.5, rely=0.52, anchor=CENTER)
     customtkinter.CTkButton(frame01, text='Main page', width=190, height=50, font=font3, cursor='hand2',
-                            corner_radius=10, command=back).place(relx=0.5, rely=0.67, anchor=CENTER)
+                            corner_radius=0, fg_color="#1a73e8",hover_color="#135cbf",command=back).place(relx=0.5, rely=0.67, anchor=CENTER)
 def programw():
     global dataname,listofdate
     try:
@@ -615,6 +619,9 @@ def MyAccount():
     image_path = 'images\image_12.png'
     pilll = im.open(image_path)
     image00 = ImageTk.PhotoImage(pilll)
+    animage_path = 'images\Visualation.png'
+    pilok = im.open(animage_path)
+    image03 = ImageTk.PhotoImage(pilok)
     tdeee = calcul.apiTDEE(age,gender,height,weight,activity)
     frame2.destroy()
     frame3 = customtkinter.CTkFrame(app,bg_color='#001220',fg_color='#001220',
@@ -685,54 +692,52 @@ def MyAccount():
                             bg_color='#262626', hover_color='#1a1919',
                             text_color='#195e94', corner_radius=0, image=image22,
                             command=logout).place(relx=0.5, y=470, anchor=CENTER)
-    frame5 = customtkinter.CTkFrame(frame3, width=170, height=980, bg_color='#262626', fg_color='#262626')
-    frame5.place(x=810,y=0)
-    customtkinter.CTkLabel(frame5,text='Fit-Data',text_color='#748498',font=('Comic Sans MS',25,'bold'),
+    frame5 = customtkinter.CTkFrame(frame3, width=150, height=980, bg_color='#262626', fg_color='#262626')
+    frame5.place(x=830,y=0)
+    customtkinter.CTkLabel(frame5,text='Fit-Data',text_color='#748498',font=('Arial', 34, 'italic','bold'),
                            bg_color='#262626',fg_color='#262626').place(relx=0.5,y=39,anchor=CENTER)
     Frame(frame5,width=280,height=10,bg='#001220').place(x=0,y=124)
-    customtkinter.CTkLabel(frame5,text='Meal',text_color='#195e94',font=('Comfortaa',24,'bold'),
+    customtkinter.CTkLabel(frame5,text='Meal',text_color='#195e94',font=('Comfortaa',23,'bold'),
                            bg_color='#262626',fg_color='#262626').place(relx=0.6,y=120,anchor=CENTER)
     customtkinter.CTkLabel(frame5,image=image08,text='',bg_color='#262626',fg_color='#262626',
                            font=('Comfortaa',24,'bold')).place(relx=0.3,y=120,anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=f'{meal}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text=f'{meal}', text_color='#327039', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=155, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=' Excercice', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text=' Excercice', text_color='#195e94', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=200, anchor=CENTER)
     customtkinter.CTkLabel(frame5, image=image09, text='', bg_color='#262626', fg_color='#262626',
-                           font=('Comfortaa', 24, 'bold')).place(relx=0.2, y=200, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=f'{excercice}', text_color='#327039', font=('Comfortaa', 24, 'bold'),
+                           font=('Comfortaa', 23, 'bold')).place(relx=0.15, y=200, anchor=CENTER)
+    customtkinter.CTkLabel(frame5, text=f'{excercice}', text_color='#327039', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=240, anchor=CENTER)
     #---------------------------------BMI----------------------------------------------------------------------------
-    customtkinter.CTkLabel(frame5, text='BMI', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text='BMI', text_color='#195e94', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=285, anchor=CENTER)
-    customtkinter.CTkLabel(frame5, text=f"{calcul.apiBMI(height,weight)}", text_color='#327039', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text=f"{calcul.apiBMI(height,weight)}", text_color='#327039', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=325, anchor=CENTER)
     customtkinter.CTkLabel(frame5, image=image02, text='', bg_color='#262626', fg_color='#262626',
-                           font=('Comfortaa', 24, 'bold')).place(relx=0.3, y=285, anchor=CENTER)
+                           font=('Comfortaa', 23, 'bold')).place(relx=0.3, y=285, anchor=CENTER)
     #----------------------------TDEE------------------------------------------------------------------------------------------
-    customtkinter.CTkLabel(frame5, text='TDEE', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text='TDEE', text_color='#195e94', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.6, y=370, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=f"{calcul.apiTDEE(age,gender,height,weight,activity)}", text_color='#327039',
-                           font=('Comfortaa', 24, 'bold'),
+                           font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=410, anchor=CENTER)
     customtkinter.CTkLabel(frame5, image=image021, text='', bg_color='#262626', fg_color='#262626',
-                           font=('Comfortaa', 24, 'bold')).place(relx=0.3, y=370, anchor=CENTER)
+                           font=('Comfortaa', 23, 'bold')).place(relx=0.3, y=370, anchor=CENTER)
     # ----------------------------Conclusion------------------------------------------------------------------------------------------
-    customtkinter.CTkLabel(frame5, text='Body-state', text_color='#195e94', font=('Comfortaa', 24, 'bold'),
+    customtkinter.CTkLabel(frame5, text='Body-state', text_color='#195e94', font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=455, anchor=CENTER)
     customtkinter.CTkLabel(frame5, text=f"{calcul.apiconc(height, weight)}", text_color='#327039',
-                           font=('Comfortaa', 24, 'bold'),
+                           font=('Comfortaa', 23, 'bold'),
                            bg_color='#262626', fg_color='#262626').place(relx=0.5, y=495, anchor=CENTER)
-    if resp[0] == 0:
-        messagebox.showinfo('No Data','There no data to visualize')
-    elif meal == 0 and conteur == 0:
-        messagebox.showinfo('Check programme','You can choose a date from programme button for visualizing purposes')
-    else:
-        pass
     liste01 = ["prot","fats","carbs"]
     liste02 = plotdata(username,date)
+    coloriBurned = liste02[3]
     if None in liste02:
-        liste02 = []
+        vis = Label(app, image=image03, fg='#001220', bg='#001220')
+        vis.image = image03
+        vis.place(relx=0.5, rely=0.5, anchor=CENTER)
+        '''liste02 = []
         fig1 = Figure(figsize=(2.5, 2.5), facecolor="#001220")
         ax_1 = fig1.add_subplot()
         ax_1.set_title('macro nutrition')
@@ -740,12 +745,12 @@ def MyAccount():
         ax_1.pie(liste02,autopct='%1.1f%%')
         canvas = FigureCanvasTkAgg(figure=fig1, master=app)
         canvas.draw()
-        canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)
+        canvas.get_tk_widget().place(relx=0.3, rely=0.6,anchor=CENTER)'''
     else:
         liste02 = liste02[0:3]
-        fig1 = Figure(figsize=(3.0, 4), facecolor="#001220")
+        fig1 = Figure(figsize=(3.0, 6), facecolor="#001220")
         plt.rcParams["axes.prop_cycle"] = plt.cycler(
-            color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
+            color=["#439A97",'#12b2ed' ,"#6cbdba", "#008fc4"])
         ax_1 = fig1.add_subplot()
         title_font = {'fontsize': 17, 'fontweight': 'bold', 'color': 'white', 'fontname': 'Arial'}
         ax_1.set_title('Macronutrients', fontdict=title_font,pad=30)
@@ -756,11 +761,37 @@ def MyAccount():
         canvas.get_tk_widget().place(relx=0.28, rely=0.6,anchor=CENTER)
         cursor.execute("select fatGoel,carbsGoel,proteinGol,caloriGoel from usersdata where username = %s",[username])
         respon = cursor.fetchone()
+        liste04 = [respon[3],coloriBurned]
         liste03 = [respon[2],respon[0],respon[1]]
-        fig2 = Figure(figsize=(3.0, 4), facecolor="#001220")
+        fig2 = Figure(figsize=(3.0, 6), facecolor="#001220")
         ax_2 = fig2.add_subplot()
-        ax_2.set_title("Progress",fontdict=title_font,pad=30)
+        ax_2.set_title("Progress",fontdict=title_font,pad=15)
         ax_2.set_facecolor('#001220')
+        bars1 = ax_2.bar([1,2,3],liste03,width=0.4,color = '#439A97')
+        bars2 = ax_2.bar([0.5,1.5,2.5],liste02,width=0.4,color='#008fc4')
+        ax_2.bar_label(bars1, labels=['ProtG', 'FatsG', 'CarbsG'], padding=3,color='white')
+        ax_2.bar_label(bars2, labels=['Prot', 'Fats', 'Carbs'], padding=3,color='white')
+        ax_2.tick_params(axis='x', colors='white')
+        ax_2.tick_params(axis='y', colors='white')
+        canvab = FigureCanvasTkAgg(figure=fig2, master=app)
+        canvab.draw()
+        canvab.get_tk_widget().place(relx=0.49, rely=0.56, anchor=CENTER)
+        fig3 = Figure(figsize=(3.0, 7), facecolor="#001220")
+        ax_3 = fig3.add_subplot()
+        title_font = {'fontsize': 17, 'fontweight': 'bold', 'color': 'white', 'fontname': 'Arial'}
+        ax_3.set_title('Colorie', fontdict=title_font, pad=30)
+        ax_3.set_facecolor('#001220')
+        ax_3.pie(liste04, labels=['Goel','Consumed'], autopct='%1.1f%%',
+                 textprops={'color': 'white', 'fontsize': 15, 'fontname': 'Arial'})
+        canvasi = FigureCanvasTkAgg(figure=fig3, master=app)
+        canvasi.draw()
+        canvasi.get_tk_widget().place(relx=0.7, rely=0.6, anchor=CENTER)
+    if resp[0] == 0:
+        messagebox.showinfo('No Data','There no data to visualize')
+    elif meal == 0 and conteur == 0:
+        messagebox.showinfo('Check programme','You can choose a date from programme button for visualizing purposes')
+    else:
+        pass
     conteur += 1
 def check():
     global cursor, conn,weight,height,gender,age,activity
