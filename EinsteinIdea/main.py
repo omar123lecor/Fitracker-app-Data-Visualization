@@ -782,7 +782,7 @@ def MyAccount():
         ax_3.set_title('Colorie', fontdict=title_font, pad=30)
         ax_3.set_facecolor('#001220')
         ax_3.pie(liste04, labels=['Goel','Consumed'], autopct='%1.1f%%',
-                 textprops={'color': 'white', 'fontsize': 15, 'fontname': 'Arial'})
+                 textprops={'color': 'white', 'fontsize': 15, 'fontname': 'Arial'},startangle=90)
         canvasi = FigureCanvasTkAgg(figure=fig3, master=app)
         canvasi.draw()
         canvasi.get_tk_widget().place(relx=0.7, rely=0.6, anchor=CENTER)
